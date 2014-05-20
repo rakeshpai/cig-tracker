@@ -52,6 +52,8 @@ var tsdb = (function() {
 		localStorage.setItem("time-data", JSON.stringify(data));
 	}
 
+	qs("#dump").innerText = JSON.stringify(data);
+
 	return {
 		record: function() {
 			var timestamp = Date.now();
@@ -81,7 +83,14 @@ function updateUI() {
 		hide("#initial")
 	} else {
 		hide("#noData");
-		var todayCount = dailyStats[tsdb.key(60*24)];
+		var todayMax = tsdb.key(60*24);
+		var todayCount = Object.keys(dailyStats).filter(function(key) {
+			return key <= todayMax;
+		}).reduce(function(sum, key) {
+			sum += dailyStats[key];
+			return sum;
+		}, 0);
+		//var todayCount = dailyStats[tsdb.key(60*24)];
 		qs("#initial div.count").innerText = todayCount;
 		qs("#initial div.subtext").innerText = "cigarette" + (todayCount == 1?"":"s") + " today";
 
